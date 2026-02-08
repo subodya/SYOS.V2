@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+
+<BorderPane prefHeight="768.0" prefWidth="1024.0" 
+            stylesheets="@../css/modern-styles.css"
+            xmlns="http://javafx.com/javafx/17" 
+            xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.syos.client.presentation.controllers.MainController">
+
+    <!-- Top Header Section -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 10;">
+            <Label fx:id="userLabel" text="User: ..." textFill="WHITE" style="-fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="versionLabel" text="v1.0" textFill="WHITE" style="-fx-opacity: 0.7;"/>
+        </HBox>
+    </top>
+
+    <!-- Center Tab Content -->
+    <center>
+        <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
+            <Tab text="Dashboard" closable="false">
+                <fx:include source="Dashboard.fxml"/>
+            </Tab>
+            
+            <Tab text="POS Checkout" closable="false">
+                <!-- Ensure POSCheckout.fxml exists, or comment this out for testing -->
+                <fx:include source="POSCheckout.fxml"/>
+            </Tab>
+            
+            <Tab text="Inventory" closable="false">
+                 <!-- Ensure Inventory.fxml exists, or comment this out for testing -->
+                <fx:include source="Inventory.fxml"/>
+            </Tab>
+            
+            <Tab text="Reports" closable="false">
+                 <!-- Ensure Reports.fxml exists, or comment this out for testing -->
+                <fx:include source="Reports.fxml"/>
+            </Tab>
+        </TabPane>
+    </center>
+
+    <!-- Bottom Status Bar -->
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #ecf0f1; -fx-padding: 5; -fx-border-color: #bdc3c7; -fx-border-width: 1 0 0 0;">
+            <Label fx:id="statusLabel" text="Status: Ready" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="connectionLabel" text="Checking connection..." />
+            <Label fx:id="dateTimeLabel" text="--:--:--" style="-fx-font-family: 'Monospaced';"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

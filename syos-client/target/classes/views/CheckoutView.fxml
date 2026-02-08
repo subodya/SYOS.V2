@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="com.syos.client.presentation.controllers.CheckoutController"
+      spacing="10" style="-fx-padding: 20;">
+
+    <Label text="SYOS Point of Sale" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+    
+    <HBox spacing="10">
+        <TextField fx:id="itemCodeField" promptText="Item Code" prefWidth="150"/>
+        <TextField fx:id="quantityField" promptText="Quantity" prefWidth="100"/>
+        <Button fx:id="addButton" text="Add to Cart" onAction="#handleAddToCart"/>
+        <ProgressIndicator fx:id="progressIndicator" prefWidth="30" prefHeight="30"/>
+    </HBox>
+
+    <TableView fx:id="cartTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="itemCodeColumn" text="Item Code" prefWidth="120"/>
+            <TableColumn fx:id="nameColumn" text="Name" prefWidth="200"/>
+            <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="100"/>
+            <TableColumn fx:id="priceColumn" text="Price" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Label fx:id="totalLabel" text="Total: Rs. 0.00" 
+               style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+        <Button fx:id="checkoutButton" text="Checkout" onAction="#handleCheckout"
+                style="-fx-font-size: 14; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+    </HBox>
+</VBox>

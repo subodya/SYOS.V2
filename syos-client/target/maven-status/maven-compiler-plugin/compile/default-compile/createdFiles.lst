@@ -1,0 +1,15 @@
+com\syos\client\presentation\controllers\ReportsController.class
+com\syos\client\presentation\controllers\MainController.class
+com\syos\client\presentation\controllers\CheckoutController$CartItemView.class
+com\syos\client\presentation\controllers\CheckoutController.class
+com\syos\client\presentation\controllers\InventoryController$1.class
+com\syos\client\presentation\controllers\DashboardController.class
+com\syos\client\services\ServerConnection.class
+com\syos\client\presentation\controllers\InventoryController$2.class
+com\syos\client\presentation\controllers\POSCheckoutController.class
+com\syos\client\ClientApplication.class
+com\syos\client\concurrency\AsyncTaskExecutor.class
+com\syos\client\presentation\controllers\POSCheckoutController$CartItem.class
+com\syos\client\presentation\controllers\InventoryController.class
+com\syos\client\services\ServerConnection$2.class
+com\syos\client\services\ServerConnection$1.class

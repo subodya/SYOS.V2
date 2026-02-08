@@ -1,0 +1,7 @@
+com\syos\common\dto\CustomerDto.class
+com\syos\common\dto\InventoryBatchDto.class
+com\syos\common\dto\CheckoutRequest.class
+com\syos\common\dto\BillItemDto.class
+com\syos\common\dto\ItemDto.class
+com\syos\common\dto\BillDto.class
+com\syos\common\util\JsonUtil.class

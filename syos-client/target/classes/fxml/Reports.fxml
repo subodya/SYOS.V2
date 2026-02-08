@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" 
+            fx:controller="com.syos.client.presentation.controllers.ReportsController"
+            styleClass="container-fluid">
+    
+    <!-- Top Toolbar -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15" styleClass="panel-header">
+            <Label text="Reports and Analytics" styleClass="label-header"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Generate Report" styleClass="button-success" onAction="#handleGenerateReport"/>
+            <Button text="Export PDF" onAction="#handleExportPDF"/>
+            <Button text="Refresh" onAction="#handleRefresh"/>
+        </HBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="20" styleClass="container-fluid">
+                
+                <!-- Report Selection -->
+                <VBox styleClass="panel" spacing="15">
+                    <Label text="Select Report Type" styleClass="label-subheader"/>
+                    
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Label text="Report Type:" minWidth="100"/>
+                        <ComboBox fx:id="reportTypeCombo" prefWidth="200" promptText="Choose report..."/>
+                        
+                        <Label text="Date Range:" minWidth="100"/>
+                        <DatePicker fx:id="startDatePicker" prefWidth="150"/>
+                        <Label text="to"/>
+                        <DatePicker fx:id="endDatePicker" prefWidth="150"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Sales Summary Cards -->
+                <HBox spacing="15">
+                    <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                        <Label text="TODAY'S SALES" styleClass="metric-title"/>
+                        <Label fx:id="todaySalesLabel" text="0.00 LKR" styleClass="metric-value metric-success"/>
+                        <Label text="POS + Web combined" styleClass="metric-subtitle"/>
+                    </VBox>
+                    <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                        <Label text="THIS WEEK" styleClass="metric-title"/>
+                        <Label fx:id="weekSalesLabel" text="0.00 LKR" styleClass="metric-value"/>
+                    </VBox>
+                    <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                        <Label text="THIS MONTH" styleClass="metric-title"/>
+                        <Label fx:id="monthSalesLabel" text="0.00 LKR" styleClass="metric-value"/>
+                    </VBox>
+                    <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                        <Label text="TOTAL TRANSACTIONS" styleClass="metric-title"/>
+                        <Label fx:id="transactionCountLabel" text="0" styleClass="metric-value metric-success"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Sales Chart -->
+                <VBox styleClass="panel" spacing="15">
+                    <Label text="Sales Trend" styleClass="label-subheader"/>
+                    <LineChart fx:id="salesChart" title="Daily Sales" minHeight="300">
+                        <xAxis>
+                            <CategoryAxis label="Date"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Sales Amount (LKR)" side="LEFT"/>
+                        </yAxis>
+                    </LineChart>
+                </VBox>
+
+                <!-- Top Selling Items -->
+                <VBox styleClass="panel" spacing="15">
+                    <Label text="Top Selling Items" styleClass="label-subheader"/>
+                    <TableView fx:id="topItemsTable" minHeight="200">
+                        <columns>
+                            <TableColumn text="Rank" prefWidth="60" fx:id="rankColumn"/>
+                            <TableColumn text="Item Code" prefWidth="120" fx:id="topItemCodeColumn"/>
+                            <TableColumn text="Item Name" prefWidth="200" fx:id="topItemNameColumn"/>
+                            <TableColumn text="Qty Sold" prefWidth="100" fx:id="qtySoldColumn"/>
+                            <TableColumn text="Revenue" prefWidth="120" fx:id="revenueColumn"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <!-- Low Stock Report -->
+                <VBox styleClass="panel" spacing="15">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Low Stock Alert" styleClass="label-subheader"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label styleClass="metric-warning" text="Items below reorder level"/>
+                    </HBox>
+                    <TableView fx:id="lowStockTable" minHeight="200">
+                        <columns>
+                            <TableColumn text="Item Code" prefWidth="120" fx:id="lowStockCodeColumn"/>
+                            <TableColumn text="Item Name" prefWidth="200" fx:id="lowStockNameColumn"/>
+                            <TableColumn text="Current Stock" prefWidth="120" fx:id="currentStockColumn"/>
+                            <TableColumn text="Reorder Level" prefWidth="120" fx:id="reorderLevelColumn"/>
+                            <TableColumn text="Shortage" prefWidth="100" fx:id="shortageColumn"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <!-- Progress Indicator -->
+                <ProgressIndicator fx:id="reportProgress" visible="false" managed="false"/>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

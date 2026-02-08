@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" 
+            fx:controller="com.syos.client.presentation.controllers.InventoryController"
+            styleClass="container-fluid">
+    
+    <!-- Top Toolbar -->
+    <top>
+        <VBox spacing="15" styleClass="panel-header">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="Inventory Management" styleClass="label-header"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Add New Item" styleClass="button-success" onAction="#handleAddNewItem"/>
+                <Button text="Add Stock Batch" onAction="#handleAddStock"/>
+                <Button text="Refresh" onAction="#handleRefresh"/>
+                <Button text="Export to Excel" styleClass="button-secondary" onAction="#handleExport"/>
+            </HBox>
+            
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Search by code or name..." 
+                          prefWidth="300" styleClass="search-field"/>
+                <ComboBox fx:id="categoryFilter" promptText="All Categories" prefWidth="150"/>
+                <ComboBox fx:id="stockStatusFilter" promptText="All Status" prefWidth="150"/>
+                <Button text="Clear Filters" styleClass="button-secondary" onAction="#handleClearFilters"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <VBox spacing="15" styleClass="container-fluid">
+            
+            <!-- Summary Cards -->
+            <HBox spacing="15">
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                    <Label text="TOTAL ITEMS" styleClass="metric-title"/>
+                    <Label fx:id="totalItemsLabel" text="0" styleClass="metric-value"/>
+                </VBox>
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                    <Label text="LOW STOCK" styleClass="metric-title"/>
+                    <Label fx:id="lowStockLabel" text="0" styleClass="metric-value metric-warning"/>
+                </VBox>
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                    <Label text="OUT OF STOCK" styleClass="metric-title"/>
+                    <Label fx:id="outOfStockLabel" text="0" styleClass="metric-value metric-error"/>
+                </VBox>
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                    <Label text="TOTAL VALUE" styleClass="metric-title"/>
+                    <Label fx:id="totalValueLabel" text="0.00 LKR" styleClass="metric-value metric-success"/>
+                </VBox>
+            </HBox>
+
+            <!-- Inventory Table -->
+            <VBox styleClass="panel" spacing="15" VBox.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Inventory Items" styleClass="label-subheader"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="recordCountLabel" text="Showing 0 items" style="-fx-text-fill: #757575;"/>
+                </HBox>
+
+                <TableView fx:id="inventoryTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn text="Item Code" prefWidth="120" fx:id="itemCodeColumn"/>
+                        <TableColumn text="Name" prefWidth="200" fx:id="itemNameColumn"/>
+                        <TableColumn text="Category" prefWidth="100" fx:id="categoryColumn"/>
+                        <TableColumn text="Price" prefWidth="80" fx:id="priceColumn"/>
+                        <TableColumn text="Stock" prefWidth="80" fx:id="stockColumn"/>
+                        <TableColumn text="Reorder Level" prefWidth="100" fx:id="reorderColumn"/>
+                        <TableColumn text="Status" prefWidth="100" fx:id="statusColumn"/>
+                        <TableColumn text="Actions" prefWidth="120" fx:id="actionsColumn"/>
+                    </columns>
+                    <contextMenu>
+                        <ContextMenu>
+                            <items>
+                                <MenuItem text="View Details" onAction="#handleViewDetails"/>
+                                <MenuItem text="Add Stock" onAction="#handleAddStockToItem"/>
+                                <MenuItem text="Edit Item" onAction="#handleEditItem"/>
+                                <SeparatorMenuItem/>
+                                <MenuItem text="Delete Item" onAction="#handleDeleteItem"/>
+                            </items>
+                        </ContextMenu>
+                    </contextMenu>
+                </TableView>
+
+                <ProgressIndicator fx:id="loadingProgress" visible="false" managed="false"/>
+            </VBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

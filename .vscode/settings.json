@@ -1,0 +1,13 @@
+{
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.16.8-hotspot",
+      "default": true
+    }
+  ],
+  "java.import.maven.enabled": true,
+  "java.import.gradle.enabled": false,
+  "java.format.settings.url": ".vscode/java-formatter.xml",
+  "java.configuration.updateBuildConfiguration": "interactive"
+}
