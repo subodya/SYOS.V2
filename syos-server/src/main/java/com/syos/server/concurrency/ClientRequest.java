@@ -34,6 +34,7 @@ public class ClientRequest<T> {
     public enum RequestType {
         CHECKOUT,
         ADD_INVENTORY,
+        ADD_ITEM,  
         GET_ITEM,
         SEARCH_ITEMS,
         GET_ALL_ITEMS,

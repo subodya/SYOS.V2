@@ -6,10 +6,7 @@ import com.syos.common.dto.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-/**
- * CRITICAL: This is the core server-side concurrency implementation
- * Uses BlockingQueue to handle multiple client requests simultaneously
- */
+
 public class RequestProcessor {
     
     private static final int QUEUE_CAPACITY = 1000;
@@ -42,10 +39,6 @@ public class RequestProcessor {
         System.out.println("✓ Started " + NUM_WORKERS + " worker threads");
     }
 
-    /**
-     * Submit a request to the queue
-     * Returns a CompletableFuture that will complete when processed
-     */
     public <T> CompletableFuture<T> submitRequest(ClientRequest<T> request) {
         try {
             boolean accepted = requestQueue.offer(request, 5, TimeUnit.SECONDS);
@@ -75,13 +68,18 @@ public class RequestProcessor {
         public void run() {
             System.out.println("Worker " + workerId + " started");
             
-            while (running.get() && !Thread.currentThread().isInterrupted()) {
-                try {
-                    // BLOCKING TAKE - waits for requests
-                    ClientRequest<?> request = requestQueue.take();
-                    
-                    long startTime = System.nanoTime();
-                    processRequest(request);
+             while (running.get() && !Thread.currentThread().isInterrupted()) {
+                 try {
+                     ClientRequest<?> request = requestQueue.take();
+
+
+                     try { Thread.sleep(200); } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                     } 
+
+                     long startTime = System.nanoTime();
+                     processRequest(request);
+
                     long duration = System.nanoTime() - startTime;
                     
                     processedCount.incrementAndGet();
@@ -100,21 +98,27 @@ public class RequestProcessor {
         }
 
         @SuppressWarnings("unchecked")
-        private <T> void processRequest(ClientRequest<T> request) {
-            try {
-                T result = switch (request.getType()) {
-                    case CHECKOUT -> (T) processCheckout((ClientRequest<BillDto>) request);
-                    case ADD_INVENTORY -> (T) processAddInventory((ClientRequest<Void>) request);
-                    case GET_ITEM -> (T) processGetItem((ClientRequest<ItemDto>) request);
-                    case SEARCH_ITEMS -> (T) processSearchItems((ClientRequest<java.util.List<ItemDto>>) request);
-                    case GET_ALL_ITEMS -> (T) processGetAllItems((ClientRequest<java.util.List<ItemDto>>) request);
-                    case GET_LOW_STOCK -> (T) processGetLowStock((ClientRequest<java.util.List<ItemDto>>) request);
-                };
-                request.complete(result);  // no raw type now
-            } catch (Exception e) {
-                request.completeExceptionally(e);
-            }
-        }
+private <T> void processRequest(ClientRequest<T> request) {
+    try {
+        T result = switch (request.getType()) {
+            case CHECKOUT -> (T) processCheckout((ClientRequest<BillDto>) request);
+            case ADD_INVENTORY -> (T) processAddInventory((ClientRequest<Void>) request);
+            case ADD_ITEM -> (T) processAddItem((ClientRequest<Void>) request); // <--- ADD THIS
+            case GET_ITEM -> (T) processGetItem((ClientRequest<ItemDto>) request);
+            case SEARCH_ITEMS -> (T) processSearchItems((ClientRequest<java.util.List<ItemDto>>) request);
+            case GET_ALL_ITEMS -> (T) processGetAllItems((ClientRequest<java.util.List<ItemDto>>) request);
+            case GET_LOW_STOCK -> (T) processGetLowStock((ClientRequest<java.util.List<ItemDto>>) request);
+        };
+        request.complete(result);
+    } catch (Exception e) {
+        request.completeExceptionally(e);
+    }
+}
+    private Void processAddItem(ClientRequest<Void> request) {
+        ItemDto itemDto = (ItemDto) request.getPayload();
+        businessFacade.addItem(itemDto); 
+        return null;
+    }
         
         private BillDto processCheckout(ClientRequest<BillDto> request) {
             CheckoutRequest checkoutReq = (CheckoutRequest) request.getPayload();

@@ -51,8 +51,6 @@ SYOS.V2
 │     │  │        │     ├─ InventoryController$2.class
 │     │  │        │     ├─ InventoryController.class
 │     │  │        │     ├─ MainController.class
-│     │  │        │     ├─ POSCheckoutController$1.class
-│     │  │        │     ├─ POSCheckoutController$2.class
 │     │  │        │     ├─ POSCheckoutController$CartItem.class
 │     │  │        │     ├─ POSCheckoutController.class
 │     │  │        │     └─ ReportsController.class
@@ -72,15 +70,12 @@ SYOS.V2
 │     │     └─ CheckoutView.fxml
 │     ├─ generated-sources
 │     │  └─ annotations
-│     ├─ maven-archiver
-│     │  └─ pom.properties
-│     ├─ maven-status
-│     │  └─ maven-compiler-plugin
-│     │     └─ compile
-│     │        └─ default-compile
-│     │           ├─ createdFiles.lst
-│     │           └─ inputFiles.lst
-│     └─ syos-client-2.0.0.jar
+│     └─ maven-status
+│        └─ maven-compiler-plugin
+│           └─ compile
+│              └─ default-compile
+│                 ├─ createdFiles.lst
+│                 └─ inputFiles.lst
 ├─ syos-common
 │  ├─ pom.xml
 │  ├─ src
@@ -264,12 +259,15 @@ SYOS.V2
    │        └─ com
    │           └─ syos
    │              └─ test
+   │                 ├─ ConcurrentLoadTester.java
    │                 └─ RapidCheckoutTest.java
    └─ target
       ├─ classes
       │  └─ com
       │     └─ syos
       │        └─ test
+      │           ├─ ConcurrentLoadTester.class
+      │           ├─ RapidCheckoutTest$HttpWorker.class
       │           └─ RapidCheckoutTest.class
       ├─ generated-sources
       │  └─ annotations

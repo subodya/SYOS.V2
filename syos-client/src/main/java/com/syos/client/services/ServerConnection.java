@@ -17,6 +17,20 @@ public class ServerConnection {
     
     private static final String SERVER_BASE_URL = "http://localhost:8080/api";
 
+    public boolean createNewItem(ItemDto item) throws Exception {
+        String url = SERVER_BASE_URL + "/inventory?type=NEW_ITEM";
+        String json = JsonUtil.toJson(item);
+        
+        try {
+            String response = sendPostRequest(url, json);
+            // Returns true if the server response contains success:true
+            return response != null && response.contains("\"success\":true");
+        } catch (Exception e) {
+            System.err.println("Failed to create new item: " + e.getMessage());
+            return false;
+        }
+    }
+
     public BillDto processCheckout(CheckoutRequest request) throws Exception {
         String url = SERVER_BASE_URL + "/checkout";
         String jsonRequest = JsonUtil.toJson(request);
@@ -26,7 +40,7 @@ public class ServerConnection {
     }
 
     public void addInventory(InventoryBatchDto batch) throws Exception {
-        String url = SERVER_BASE_URL + "/inventory";
+        String url = SERVER_BASE_URL + "/inventory"; 
         String jsonRequest = JsonUtil.toJson(batch);
         
         sendPostRequest(url, jsonRequest);
@@ -49,19 +63,21 @@ public class ServerConnection {
             new com.google.gson.reflect.TypeToken<List<ItemDto>>(){}.getType());
     }
 
+    
     private String sendPostRequest(String urlString, String jsonBody) throws Exception {
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        
+    
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Accept", "application/json");  // FIXED
         conn.setDoOutput(true);
-
+    
         try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonBody.getBytes("utf-8");
+            byte[] input = jsonBody.getBytes("UTF-8");
             os.write(input, 0, input.length);
         }
-
+    
         return readResponse(conn);
     }
 
@@ -69,16 +85,19 @@ public class ServerConnection {
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        conn.setRequestProperty("Accept", "application/json");
 
         return readResponse(conn);
     }
 
+
     private String readResponse(HttpURLConnection conn) throws Exception {
         int responseCode = conn.getResponseCode();
         
-        if (responseCode == HttpURLConnection.HTTP_OK) {
+        // Handle both 200 OK and 201 Created
+        if (responseCode >= 200 && responseCode <= 299) {
             BufferedReader in = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
+                new InputStreamReader(conn.getInputStream(), "utf-8"));
             String inputLine;
             StringBuilder response = new StringBuilder();
 
@@ -89,7 +108,14 @@ public class ServerConnection {
 
             return response.toString();
         } else {
-            throw new Exception("HTTP request failed: " + responseCode);
+            // Read error stream for better debugging
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(conn.getErrorStream() != null ? conn.getErrorStream() : conn.getInputStream()));
+            StringBuilder errorResponse = new StringBuilder();
+            String line;
+            while((line = in.readLine()) != null) errorResponse.append(line);
+            
+            throw new Exception("HTTP " + responseCode + " Error: " + errorResponse.toString());
         }
     }
 }

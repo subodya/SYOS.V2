@@ -23,28 +23,37 @@ public class InventoryServlet extends HttpServlet {
             .getAttribute("requestProcessor");
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
-            throws ServletException, IOException {
-        
-        try {
-            String jsonBody = req.getReader().lines()
-                .collect(Collectors.joining());
-            
-            InventoryBatchDto batch = JsonUtil.fromJson(
-                jsonBody, InventoryBatchDto.class);
+@Override
+protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
+        throws ServletException, IOException {
+    
+    try {
+        String type = req.getParameter("type");
+        String jsonBody = req.getReader().lines().collect(Collectors.joining());
+        ClientRequest<?> clientRequest;
 
-            ClientRequest<Void> clientRequest = new ClientRequest<>(
-                ClientRequest.RequestType.ADD_INVENTORY, batch);
-            
-            requestProcessor.submitRequest(clientRequest).get();
-
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write("{\"success\": true}");
-
-        } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+        if ("NEW_ITEM".equals(type)) {
+            // Case 1: Create a brand new product definition
+            ItemDto newItem = JsonUtil.fromJson(jsonBody, ItemDto.class);
+            clientRequest = new ClientRequest<>(ClientRequest.RequestType.ADD_ITEM, newItem);
+        } else {
+            // Case 2: Standard Stock Batch update (your existing logic)
+            InventoryBatchDto batch = JsonUtil.fromJson(jsonBody, InventoryBatchDto.class);
+            clientRequest = new ClientRequest<>(ClientRequest.RequestType.ADD_INVENTORY, batch);
         }
+
+        // Submit to the concurrent RequestProcessor
+        requestProcessor.submitRequest(clientRequest).get();
+
+        // Fix for your previous Dashboard issue:
+        com.syos.server.presentation.websocket.DashboardWebSocket.broadcast("REFRESH_DASHBOARD");
+
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.getWriter().write("{\"success\": true}");
+
+    } catch (Exception e) {
+        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        resp.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
     }
+}
 }

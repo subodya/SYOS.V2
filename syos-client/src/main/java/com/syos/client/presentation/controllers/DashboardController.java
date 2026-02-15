@@ -13,8 +13,12 @@ import javafx.scene.chart.*;
 import javafx.scene.control.*;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.WebSocket;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.concurrent.CompletionStage;
 
 public class DashboardController {
     
@@ -24,7 +28,7 @@ public class DashboardController {
     @FXML private Label expiringSoonValue;
     @FXML private Label inventoryValue;
     @FXML private Label transactionCount;
-    
+    @FXML WebSocket webSocket;
     @FXML private TableView<BillDto> recentTransactionsTable;
     @FXML private TableColumn<BillDto, String> billIdColumn;
     @FXML private TableColumn<BillDto, String> dateTimeColumn;
@@ -45,6 +49,45 @@ public class DashboardController {
         
         setupTableColumns();
         loadDashboardData();
+        connectWebSocket();
+
+    }
+    private void connectWebSocket() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            client.newWebSocketBuilder()
+                .buildAsync(URI.create("ws://localhost:8080/ws/dashboard"), new WebSocketListener())
+                .thenAccept(ws -> {
+                    this.webSocket = ws;
+                    System.out.println("Connected to WebSocket for real-time updates");
+                });
+        } catch (Exception e) {
+            System.err.println("Failed to connect to WebSocket: " + e.getMessage());
+        }
+    }
+
+        // Inner class to handle incoming messages
+        private class WebSocketListener implements WebSocket.Listener {
+        @Override
+        public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
+            System.out.println("WebSocket Update Received: " + data);
+            
+            if ("REFRESH_DASHBOARD".equals(data.toString())) {
+                // Must update UI on JavaFX Thread
+                Platform.runLater(() -> {
+                    System.out.println("Refreshing Dashboard Data...");
+                    loadDashboardData(); // Your existing refresh method
+                });
+            }
+            return WebSocket.Listener.super.onText(webSocket, data, last);
+        }
+    }
+
+        // Optional: Close socket on app exit
+        public void shutdown() {
+        if (webSocket != null) {
+            webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "App Closing");
+        }
     }
 
     private void setupTableColumns() {

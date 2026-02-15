@@ -1,1 +1,3 @@
+com\syos\test\RapidCheckoutTest$HttpWorker.class
+com\syos\test\ConcurrentLoadTester.class
 com\syos\test\RapidCheckoutTest.class

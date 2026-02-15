@@ -47,7 +47,7 @@ public class CheckoutServlet extends HttpServlet {
             
             CompletableFuture<BillDto> future = requestProcessor.submitRequest(clientRequest);
 
-            // Wait for result (async handled by worker threads)
+            com.syos.server.presentation.websocket.DashboardWebSocket.broadcast("REFRESH_DASHBOARD");
             BillDto bill = future.get();
 
             // Send response

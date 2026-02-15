@@ -1,3 +1,4 @@
+com\syos\client\presentation\controllers\DashboardController$WebSocketListener.class
 com\syos\client\presentation\controllers\ReportsController.class
 com\syos\client\presentation\controllers\MainController.class
 com\syos\client\presentation\controllers\CheckoutController$CartItemView.class

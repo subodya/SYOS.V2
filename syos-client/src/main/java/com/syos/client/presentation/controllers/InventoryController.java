@@ -3,14 +3,15 @@ package com.syos.client.presentation.controllers;
 import com.syos.client.concurrency.AsyncTaskExecutor;
 import com.syos.client.services.ServerConnection;
 import com.syos.common.dto.*;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-
+import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
+import java.util.Optional;
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,90 @@ public class InventoryController {
         loadInventory();
     }
 
+
+
+@FXML
+private void handleAddNewItem() {
+    // 1. Create a Custom Dialog
+    Dialog<ItemDto> dialog = new Dialog<>();
+    dialog.setTitle("Add New Product");
+    dialog.setHeaderText("Enter details for the new inventory item");
+
+    ButtonType addButtonType = new ButtonType("Add to Inventory", ButtonBar.ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+
+    TextField code = new TextField(); code.setPromptText("ITEM001");
+    TextField name = new TextField(); name.setPromptText("Product Name");
+    TextField desc = new TextField(); desc.setPromptText("Description");
+    TextField price = new TextField(); price.setPromptText("0.00");
+    ComboBox<String> cat = new ComboBox<>(FXCollections.observableArrayList("ELECTRONICS", "FOOD", "ACCESSORIES", "OTHER"));
+    TextField reorder = new TextField(); reorder.setPromptText("10");
+
+    grid.add(new Label("Item Code:"), 0, 0); grid.add(code, 1, 0);
+    grid.add(new Label("Name:"), 0, 1); grid.add(name, 1, 1);
+    grid.add(new Label("Description:"), 0, 2); grid.add(desc, 1, 2);
+    grid.add(new Label("Price (Rs):"), 0, 3); grid.add(price, 1, 3);
+    grid.add(new Label("Category:"), 0, 4); grid.add(cat, 1, 4);
+    grid.add(new Label("Reorder Level:"), 0, 5); grid.add(reorder, 1, 5);
+
+    dialog.getDialogPane().setContent(grid);
+
+    // Convert result to ItemDto
+    dialog.setResultConverter(dialogButton -> {
+        if (dialogButton == addButtonType) {
+            return new ItemDto(
+                code.getText(), name.getText(), desc.getText(),
+                new BigDecimal(price.getText()), cat.getValue(),
+                0, // Initial stock is 0
+                Integer.parseInt(reorder.getText())
+            );
+        }
+        return null;
+    });
+
+    // 2. Execute Async Request
+    Optional<ItemDto> result = dialog.showAndWait();
+    result.ifPresent(itemDto -> {
+        loadingProgress.setVisible(true);
+        asyncExecutor.executeAsync(
+            () -> serverConnection.createNewItem(itemDto), // New method needed in ServerConnection
+            success -> {
+                showSuccess("Success", "Product " + itemDto.getName() + " created.");
+                loadInventory();
+            },
+            error -> showError("Creation Failed", error.getMessage())
+        );
+    });
+}
+
+@FXML
+private void handleAddStock() {
+    // Logic: If an item is selected in the table, use that. Otherwise, ask for a code.
+    ItemDto selected = inventoryTable.getSelectionModel().getSelectedItem();
+    if (selected != null) {
+        handleAddStockToItem(selected);
+    } else {
+        // Show a simple dialog asking for Item Code first
+        TextInputDialog codeDialog = new TextInputDialog();
+        codeDialog.setTitle("Add Stock Batch");
+        codeDialog.setHeaderText("Enter Item Code to add stock to:");
+        codeDialog.showAndWait().ifPresent(code -> {
+            // Find item in our existing list
+            allItems.stream()
+                .filter(i -> i.getItemCode().equalsIgnoreCase(code))
+                .findFirst()
+                .ifPresentOrElse(
+                    this::handleAddStockToItem,
+                    () -> showError("Not Found", "Item code " + code + " does not exist.")
+                );
+        });
+    }
+}
     private void setupTable() {
         itemCodeColumn.setCellValueFactory(new PropertyValueFactory<>("itemCode"));
         itemNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -235,15 +320,7 @@ public class InventoryController {
         stockStatusFilter.setValue("All Status");
     }
 
-    @FXML
-    private void handleAddNewItem() {
-        showInfo("Add New Item", "Feature coming soon...");
-    }
 
-    @FXML
-    private void handleAddStock() {
-        showInfo("Add Stock", "Feature coming soon...");
-    }
 
     @FXML
     private void handleExport() {

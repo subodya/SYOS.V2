@@ -21,5 +21,6 @@ com\syos\server\concurrency\ServerMetrics.class
 com\syos\server\concurrency\RequestProcessor$WorkerThread.class
 com\syos\server\concurrency\RequestProcessor$1.class
 com\syos\server\domain\entities\BillItem.class
+com\syos\server\presentation\websocket\DashboardWebSocket.class
 com\syos\server\infrastructure\database\DatabaseConnection.class
 com\syos\server\concurrency\RequestProcessor.class

@@ -18,10 +18,6 @@ public class AsyncTaskExecutor {
     public AsyncTaskExecutor() {
         this.executor = Executors.newCachedThreadPool();
     }
-
-    /**
-     * Execute task asynchronously and update UI on completion
-     */
     public <T> void executeAsync(
             Callable<T> task,
             Consumer<T> onSuccess,
